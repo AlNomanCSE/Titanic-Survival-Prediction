@@ -141,3 +141,38 @@ results_df = pd.DataFrame(results).T
 print("📊 All Models Performance:")
 print(results_df)
 
+
+# Find best model
+best_model_name = results_df["accuracy"].idxmax()
+best_accuracy = results_df["accuracy"].max()
+
+# =====================================================================
+# STEP 9: MAKE PREDICTIONS ON NEW DATA
+# =====================================================================
+print(f"\n🔮 STEP 9: Making Predictions with Best Model ({best_model_name})")
+print("="*60)
+
+best_model = models[best_model_name]
+print("\n👤 Example Prediction:")
+print("Passenger Profile: 25-year-old female, 3rd class, embarked from Southampton")
+
+sample_passenger = pd.DataFrame({
+    'Pclass': [3],
+    'Age': [25],
+    'SibSp': [0],
+    'Parch': [0],
+    'Fare': [10.0],  # A reasonable guess for a 3rd class fare
+    'Sex_Encoded': [0], # Female is encoded as 0
+    'Embarked_C': [0],
+    'Embarked_Q': [0],
+    'Embarked_S': [1], # Southampton is encoded as 1
+})
+
+sample_passenger[numerical_columns] = scaler.transform(sample_passenger[numerical_columns])
+
+prediction = best_model.predict(sample_passenger)[0]
+probability = best_model.predict_proba(sample_passenger)[0]
+
+print(f"🔮 Prediction: {'Survived' if prediction == 1 else 'Did not survive'}")
+print(f"📊 Survival Probability: {probability[1]:.3f}")
+print(f"📊 Non-survival Probability: {probability[0]:.3f}")
